@@ -1,0 +1,294 @@
+<html lang="de">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="robots" content="index,follow"/>
+		<meta name="license" content="Alle Inhalte, die nicht auf Werken Dritter beruhen, unterliegen einer Creative Commons Namensnennung - Weitergabe unter gleichen Bedingungen 4.0 International Lizenz." />
+        <title>crop - by codecivil</title>
+        <style>
+
+			* { 
+			  border-radius:5px;
+			  -moz-border-radius:5px;
+			  -webkit-transition: all 0.2s ease;
+			  -moz-transition: all 0.2s ease;
+			  -ms-transition: all 0.2s ease;
+			  -o-transition: all 0.2s ease;
+			  transition: all 0.2s ease;
+			}
+			  
+
+			label, div, p, li, button { 
+				font-family: Lucida Grande, Geneva, Arial, Verdana, Tahoma;
+			   }
+
+			#crop_wrapper { 
+				position: absolute;
+				top: 10%;
+				left: 50%;
+				margin-right: -50%;
+				width: 50%;
+				padding: 20;
+				transform: translate(-50%, 0);
+				-webkit-transform: translate(-50%, 0);
+				background-color: #b0d3ff;
+				line-height: 2em;
+				text-align: center;
+				}		
+
+
+			#img_upload {
+				padding: 10px;
+				}
+
+			#custom_form,#result {
+				padding: 10px;
+				background-color: #c1e5ff;
+				}	
+				
+			#inprogress { 
+				display: none; 
+				background-color: #d2f6ff;
+				margin: 10px;
+				padding: 5px;
+				text-align: justify;
+				line-height: 1.5em;
+				}
+				
+			#info { 
+				background-color: #d2f6ff;
+				margin: 10px;
+				text-align: justify;
+				line-height: 1.5em;
+				}
+				
+			#info_wrapper:hover { cursor: pointer; }
+				
+			#info_wrapper { 
+				background-color: #d2f6ff;
+				margin: 10px;
+				padding: 5px;
+				text-align: left;
+				line-height: 1.5em;
+				}
+        </style>
+        <script type="text/javascript">
+			/*crop a certain area of a certain image
+			*
+			* n: n-th file
+			* imgfiles: user given file list in file input
+			* result: id of result element
+			* inprogress: id of element saying "in progress"
+			* style: user chosen crop style
+			* width,height: picture target format
+			* cut: number of cut proposal
+			* callback: callback function (here: use finished() )
+			*/ 
+			function crop_image_cut (n, imgfiles, result, inprogress, style, width, height, cut, callback) {
+					document.getElementById(inprogress).style.display = "block";
+					if (!cut) { cut = 0; }
+					var imgfile = imgfiles[n];
+					var img = new Image();
+					img.src = window.URL.createObjectURL(imgfile);
+					img.onload = function () {
+						var _factor = width / img.width;
+						if ( _factor * img.height < height ) { _factor = height / img.height; }
+						//recompute maximal number of cuts in width and height
+						var w_max = Math.floor(2*img.width*_factor/width)-2;
+						var h_max = Math.floor(2*img.height*_factor/height)-2;
+						var w_cut = Math.min(w_max,cut); var h_cut = Math.min(h_max,cut);
+						if (h_cut < 0) { h_cut = 1; };
+						if (w_cut < 0) { w_cut = 1; };
+						//create canvas, cut and resize
+						var canvas = document.createElement('canvas');
+						var ctx = canvas.getContext('2d');
+						if ( width > 0 && height > 0 ) {
+							canvas.width = width; canvas.height = height;
+							//cut every half frame... (factor 2)
+							ctx.drawImage(img,w_cut*width/(2*_factor),h_cut*height/(2*_factor),width/_factor,height/_factor,0,0,width,height);
+						} else {	
+							canvas.width = img.width * _factor; canvas.height = img.height * _factor;
+							ctx.drawImage(img,0,0,img.width,img.height,0,0,img.width * _factor,img.height * _factor);
+						}
+						//create URL and anchor from canvas
+						var new_img_url = canvas.toDataURL();
+						var new_img = new Image();
+						new_img.src = new_img_url;
+						new_anchor = document.createElement('a');
+						new_anchor.href = new_img_url;
+							//create new file name
+							new_prefix = imgfile.name.substring(0,imgfile.name.indexOf('.'));
+							if ( style == "custom" ) {
+								new_img_name = new_prefix + "_" + style + "_" + width + "x" + height + ".png";
+							} else {
+								new_img_name = new_prefix + "_" + style + ".png";
+							} 
+							//
+						new_anchor.download = new_img_name;
+						new_anchor.appendChild(new_img);
+						//create result display
+						var saved_space = Math.round(100-75*new_img_url.length/imgfile.size);
+						if ( saved_space > 0 ) {
+							document.getElementById(result).innerHTML += imgfile.name + ": Um <strong>" + saved_space + "&#37;</strong> reduzierte Dateigröße.<br />";
+						} else {
+							document.getElementById(result).innerHTML += imgfile.name + ": spart nichts ein. Verwenden Sie nach Möglichkeit das Originalbild.<br />";
+						}
+						document.getElementById(result).appendChild(new_anchor);
+						document.getElementById(result).innerHTML += "<br />";
+						if ( h_cut == h_max && w_cut == w_max ) { callback(saved_space,inprogress); }			
+					}
+				}
+			
+			/*determine the number of necessary cuts for a certain image
+			* and call the callback function
+			*
+			* n: n-th file
+			* imgfiles: user given file list in file input
+			* result: id of result element
+			* inprogress: id of element saying "in progress"
+			* style: user chosen crop style
+			* width,height: picture target format
+			* callback: callback function
+			*/ 
+			function determine_max_repeat(n,imgfiles,result,inprogress,style,width,height,callback) {
+					var imgfile = imgfiles[n];
+					var img = new Image();
+					var w_max,h_max;
+					img.src = window.URL.createObjectURL(imgfile);
+					img.onload = function () {
+						var _factor = width / img.width;
+						if ( _factor * img.height < height ) { _factor = height / img.height; }
+						//cut after half a width/height, i.e. overlapping cuts
+						w_max = Math.floor(2*img.width*_factor/width)-1;
+						h_max = Math.floor(2*img.height*_factor/height)-1;
+						//
+						if (h_max < 0) { h_max = 1; }
+						if (w_max < 0) { w_max = 1; }	
+						//necessary cuts: w_max*hmax ( = Math.max(w_max,h_max) )
+						callback(n,imgfiles,result,inprogress,style,width,height,w_max*h_max);
+					}
+				}
+			
+			/*the callback function used in determine_max_repeat:
+			* generate the picture sequence of cuts for a certain image
+			*
+			* i: i-th file
+			* imgfiles: user given file list in file input
+			* result: id of result element
+			* inprogress: id of element saying "in progress"
+			* style: user chosen crop style
+			* width,height: picture target format
+			* value: number of cuts to be generated
+			*/ 
+			function crop_image(i,imgfiles,result,inprogress,style,width,height,value) { for ( var k = 0; k < value; k++ ) { crop_image_cut(i,imgfiles,result,inprogress,style,width,height,k,finished); }; }
+
+			/*the callback function used in crop_image_cut:
+			* stop to display "in progress"
+			* 
+			* value: some unused value (here: saved_space), generated at the end of image processing (s.th. the callback function of crop_image_cut waits until it is available!)
+			* inprogress: id of element saying "in progress"
+			*/
+			function finished(value,inprogress) { document.getElementById(inprogress).style.display = "none"; }
+
+			/*crop a sequence of files according to given style
+			*
+			* filelist: id of file input element
+			* style_selection: id of style select element
+			* el_width, el_height: the ids of the number input elements determining custom width and height
+			* inprogress: id of the element showing "in progress"
+			* result: id of element for displaying the result
+			*/
+			function crop(filelist, style_selection, el_width, el_height, inprogress, result) {
+				document.getElementById(result).innerHTML = "";
+				var style = document.getElementById(style_selection).value;
+				var width, height;
+				switch(style) {
+					case "news":
+						width = 225; height = 155; break;
+					case "medium":
+						width = 395; height = -1; break;
+					case "large":
+						width = 790; height = -1; break;
+					case "custom":
+						width = document.getElementById(el_width).value || -1; height = document.getElementById(el_height).value || -1;
+					}
+				if ( width <= 0 && height <= 0 ) { return false; }
+				if ( width <= -2 || height <= -2 ) { return false; }				
+				var imgfiles = document.getElementById(filelist).files;
+				if ( navigator.userAgent.indexOf('Firefox') == -1 && navigator.userAgent.indexOf('Chrom') == -1 ) {
+					document.getElementById(result).innerHTML += "Zum Speichern bitte das Bild rechtsklicken.<br />";
+				} else {
+					document.getElementById(result).innerHTML += "Zum Speichern bitte das Bild anklicken.<br />";
+				}
+				for ( var i = 0; i < imgfiles.length; i++ ) {
+						determine_max_repeat(i,imgfiles,result,inprogress,style,width,height,crop_image);
+					}
+				}
+	</script>
+	</head>
+	
+	<body>
+		<div id="crop_wrapper">
+			<div id="info_wrapper" onclick="toggleInfo();"><strong>Info</strong>
+				<div id="info">
+					<p>Mit <strong>crop - by codecivil</strong> können Sie Bilder zum Gebrauch für Homepages, e-Mails oder 
+					andere Webanwendungen zurechtschneiden. Oft werden dabei mehr als 90% Dateigröße eingespart, was
+					nicht nur den einmaligen Datenverkehr beim Versenden der e-Mail oder beim Hochladen auf die Homepage
+					verringert, sondern dies auch jedesmal, wenn jemand die das Bild enthaltende Webseite besucht. Dies spart <strong>Energie</strong>
+					und <strong>Bandbreite</strong> in nicht unereheblichem Ausmaß.</p> 
+					<p>Diese Seite funktioniert offline. Das heißt, die gesamte Bildbearbeitung läuft auf Ihrem Rechner,
+					es werden keine Daten auf andere Server hochgeladen und damit ihre <strong>Privatsphäre</strong> geschützt.</p>
+					<p>Die gesamte Software besteht aus diesem einzigen File, das unter der GNU Public License lizensiert ist.
+					Der Quellcode kann auch unter <a></a> heruntergeladen werden. Diese "Offenheit" von Software stärkt <strong>Transparenz</strong>
+					und <strong>Sicherheit</strong> im digitalen Bereich.</p>  
+					
+					Features:
+					<ul>
+					<li>Batch Processing: Sie können mehrere Bilder auf einmal bearbeiten.</li>
+					<li>Voreingestellte Optionen, die für viele Webanwendungen passend sind.</li>
+					<li>Individuelle Abmessungen</li>
+					<li>Bewahrt Seitenverhätnis, wenn nur eine Abmessung angegeben wird</li>
+					<li>Mehrere bearbeitete Versionen, falls das Größenverhältnis der Zieldatei maßgeblich von dem
+					der Quelldatei abweicht</li>
+					<li>Funktioniert offline</li>
+					<li>Bequeme Download-Möglichkeit (volle Unterstützung bei Firefox und Chrome)</li>
+					</ul>
+				</div>
+			</div>
+			<form id="img_upload" onsubmit="crop('img','style_selection', 'width', 'height', 'inprogress', 'result'); return false">
+			<label for="img">Ich möchte <br /></label><input type="file" id="img" multiple><br />
+			<label for="style_selection">auf<br /></label><select id="style_selection"><br />
+				<option id="news" value="news" selected>"Nachrichten"-Größe</option>
+				<option id="medium" value="medium">halbe Seitenbreite</option>
+				<option id="large" value="large">ganze Seitenbreite</option>
+				<option id="custom" value="custom">individuelle Größe...</option>
+			</select><br />
+			<div id="custom_form">
+				<label for="width">Breite</label><input type="number" id="width">
+				<label for="height">Höhe</label><input type="number" id="height" title="Falls leer, wird das Seitenverhältnis beibehalten.">
+			</div><br />
+			<input type="submit" value="zuschneiden">
+			</form>
+			<div id="inprogress">Bilder werden vorbereitet...</div>
+			<div id="result" title="Zum Speichern bitte anklicken"></div>
+		</div>
+		<script type="text/javascript">
+			toggleCustom();
+			document.getElementById('info').style.display = "none";
+			document.getElementById('style_selection').addEventListener('change',toggleCustom);
+			function toggleCustom() {
+				if ( document.getElementById('style_selection').value == "custom" ) {
+					document.getElementById('custom_form').style.display = "inline";
+				} else {
+					document.getElementById('custom_form').style.display = "none";
+				} 
+			}
+			function toggleInfo() {
+				if ( document.getElementById('info').style.display == "none" ) {
+					document.getElementById('info').style.display = "inline";
+				} else {
+					document.getElementById('info').style.display = "none";
+				} 
+			}
+		</script>
+	</body>
