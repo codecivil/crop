@@ -1,9 +1,27 @@
+<!--
+	crop - use your browser to crop images
+	Copyright (C) 2016  Marco Kühnel <kuehnel@codecivil.de>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
 <html lang="de">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="robots" content="index,follow"/>
-	<title>crop - by codecivil</title>
+        <title>crop - by codecivil</title>
         <style>
 
 			* { 
@@ -17,16 +35,17 @@
 			}
 			  
 
-			label, div, p, li, button { 
+			h1, label, div, p, li, button { 
 				font-family: Lucida Grande, Geneva, Arial, Verdana, Tahoma;
 			   }
-
+			h1 { text-align: center; }
+			
 			#crop_wrapper { 
 				position: absolute;
 				top: 10%;
 				left: 50%;
 				margin-right: -50%;
-				width: 50%;
+				width: 810px;
 				padding: 20;
 				transform: translate(-50%, 0);
 				-webkit-transform: translate(-50%, 0);
@@ -70,7 +89,31 @@
 				text-align: left;
 				line-height: 1.5em;
 				}
-        </style>
+
+			#impressum_wrapper {
+				background-color: #ffffff;
+				position: fixed;
+				top: 0;
+				bottom: 0;
+				right: 0;
+				font-size: small; 
+				color: #999999;
+				margin: 5px;
+				padding: 5px;
+				line-height: 1.5em;
+				z-index: 5;
+				overflow: auto;
+				}
+				
+			#impressum_wrapper:hover { cursor: pointer; }
+			
+			#impressum {
+				text-align: left;
+			}
+			#impressum_title {
+				text-align: right;
+			}
+		</style>
         <script type="text/javascript">
 			/*crop a certain area of a certain image
 			*
@@ -95,19 +138,19 @@
 						//recompute maximal number of cuts in width and height
 						var w_max = Math.floor(2*img.width*_factor/width)-2;
 						var h_max = Math.floor(2*img.height*_factor/height)-2;
+						if (h_max < 0) { h_max = 0; };
+						if (w_max < 0) { w_max = 0; };
 						var w_cut = Math.min(w_max,cut); var h_cut = Math.min(h_max,cut);
-						if (h_cut < 0) { h_cut = 1; };
-						if (w_cut < 0) { w_cut = 1; };
 						//create canvas, cut and resize
 						var canvas = document.createElement('canvas');
 						var ctx = canvas.getContext('2d');
 						if ( width > 0 && height > 0 ) {
 							canvas.width = width; canvas.height = height;
-							//cut every half frame... (factor 2)
-							ctx.drawImage(img,w_cut*width/(2*_factor),h_cut*height/(2*_factor),width/_factor,height/_factor,0,0,width,height);
+							//cut every half frame... (factor 2) //image might be too big, so try...
+							try { ctx.drawImage(img,w_cut*width/(2*_factor),h_cut*height/(2*_factor),width/_factor,height/_factor,0,0,width,height); } catch(err) { document.getElementById(result).innerHTML += imgfile.name + ": Leider zu groß für den Browser.<br />"; callback(100,inprogress); return;}
 						} else {	
 							canvas.width = img.width * _factor; canvas.height = img.height * _factor;
-							ctx.drawImage(img,0,0,img.width,img.height,0,0,img.width * _factor,img.height * _factor);
+							try { ctx.drawImage(img,0,0,img.width,img.height,0,0,img.width * _factor,img.height * _factor); } catch(err) { document.getElementById(result).innerHTML += imgfile.name + ": Leider zu groß für den Browser.<br />"; callback(100,inprogress); return;}
 						}
 						//create URL and anchor from canvas
 						var new_img_url = canvas.toDataURL();
@@ -133,7 +176,7 @@
 							document.getElementById(result).innerHTML += imgfile.name + ": spart nichts ein. Verwenden Sie nach Möglichkeit das Originalbild.<br />";
 						}
 						document.getElementById(result).appendChild(new_anchor);
-						document.getElementById(result).innerHTML += "<br />";
+						document.getElementById(result).innerHTML += "<br /><br />";
 						if ( h_cut == h_max && w_cut == w_max ) { callback(saved_space,inprogress); }			
 					}
 				}
@@ -227,24 +270,51 @@
 	</head>
 	
 	<body>
+		<h1>crop</h1>
+		<div id="impressum_wrapper" onclick="toggleEl('impressum');">
+			<div id="impressum_title">Impressum</div>
+			<div id="impressum">
+				Angaben gemäß § 5 TMG:<br />
+				Dr. Marco Kühnel<br />
+				codecivil Dr. Marco Kühnel ICT Services<br />
+				Vechteweg 4<br />
+				30539 Hannover<br />
+				<br />
+				Kontakt:<br />
+				Telefon: 	+49 (0) 170 7507391<br />
+				E-Mail: 	kuehnel@codecivil.de<br />
+				<br />
+				Umsatzsteuer-ID:<br />
+				Umsatzsteuer-Identifikationsnummer gemäß §27 a Umsatzsteuergesetz:<br />
+				DE 296 659 690<br />
+				Finanzamt Hannover-Mitte<br />
+				<br />
+				Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV:<br />
+				Dr. Marco Kühnel<br />
+				Vechteweg 4<br />
+				30539 Hannover <br />
+			</div>
+		</div>
 		<div id="crop_wrapper">
-			<div id="info_wrapper" onclick="toggleInfo();"><strong>Info</strong>
+			<div id="info_wrapper" onclick="toggleEl('info');"><strong>Info</strong>
 				<div id="info">
 					<p>Mit <strong>crop - by codecivil</strong> können Sie Bilder zum Gebrauch für Homepages, e-Mails oder 
 					andere Webanwendungen zurechtschneiden. Oft werden dabei mehr als 90% Dateigröße eingespart, was
 					nicht nur den einmaligen Datenverkehr beim Versenden der e-Mail oder beim Hochladen auf die Homepage
 					verringert, sondern dies auch jedesmal, wenn jemand die das Bild enthaltende Webseite besucht. Dies spart <strong>Energie</strong>
-					und <strong>Bandbreite</strong> in nicht unereheblichem Ausmaß.</p> 
+					und <strong>Bandbreite</strong> in nicht unerheblichem Ausmaß.</p> 
 					<p>Diese Seite funktioniert offline. Das heißt, die gesamte Bildbearbeitung läuft auf Ihrem Rechner,
-					es werden keine Daten auf andere Server hochgeladen und damit ihre <strong>Privatsphäre</strong> geschützt.</p>
+					es werden keine Daten auf andere Server hochgeladen und damit Ihre <strong>Privatsphäre</strong> geschützt.</p>
 					<p>Die gesamte Software besteht aus diesem einzigen File, das unter der <a href="https://github.com/codecivil/crop/blob/master/LICENSE">GNU Public License</a> lizensiert ist.
 					Die neueste Version ist unter <a href="https://github.com/codecivil/crop">https://github.com/codecivil/crop</a> erhältlich. Diese "Offenheit" von Software stärkt <strong>Transparenz</strong>
 					und <strong>Sicherheit</strong> im digitalen Bereich.</p>  
+					<p>Um die Seite offline zu nutzen, rechtsklicken Sie auf eine freie Stelle der Seite und wählen Sie "Seite speichern unter..." aus. Danach können Sie jederzeit das heruntergeladene
+					File index.html mit dem Browser öffnen und alle Funktionen nutzen.</p>
 					
 					Features:
 					<ul>
-					<li>Batch Processing: Sie können mehrere Bilder auf einmal bearbeiten.</li>
-					<li>Voreingestellte Optionen, die für viele Webanwendungen passend sind.</li>
+					<li>Batch Processing: Sie können mehrere Bilder auf einmal bearbeiten</li>
+					<li>Voreingestellte Optionen, die für viele Webanwendungen passend sind</li>
 					<li>Individuelle Abmessungen</li>
 					<li>Bewahrt Seitenverhätnis, wenn nur eine Abmessung angegeben wird</li>
 					<li>Mehrere bearbeitete Versionen, falls das Größenverhältnis der Zieldatei maßgeblich von dem
@@ -274,6 +344,7 @@
 		<script type="text/javascript">
 			toggleCustom();
 			document.getElementById('info').style.display = "none";
+			document.getElementById('impressum').style.display = "none";
 			document.getElementById('style_selection').addEventListener('change',toggleCustom);
 			function toggleCustom() {
 				if ( document.getElementById('style_selection').value == "custom" ) {
@@ -282,11 +353,11 @@
 					document.getElementById('custom_form').style.display = "none";
 				} 
 			}
-			function toggleInfo() {
-				if ( document.getElementById('info').style.display == "none" ) {
-					document.getElementById('info').style.display = "inline";
+			function toggleEl(el) {
+				if ( document.getElementById(el).style.display == "none" ) {
+					document.getElementById(el).style.display = "inline";
 				} else {
-					document.getElementById('info').style.display = "none";
+					document.getElementById(el).style.display = "none";
 				} 
 			}
 		</script>
