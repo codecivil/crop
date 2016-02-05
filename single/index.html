@@ -133,8 +133,7 @@
 					var img = new Image();
 					img.src = window.URL.createObjectURL(imgfile);
 					img.onload = function () {
-						var _factor = width / img.width;
-						if ( _factor * img.height < height ) { _factor = height / img.height; }
+						var _factor = Math.max( width / img.width, height / img.height );
 						//recompute maximal number of cuts in width and height
 						var w_max = Math.floor(2*img.width*_factor/width)-2;
 						var h_max = Math.floor(2*img.height*_factor/height)-2;
@@ -198,14 +197,13 @@
 					var w_max,h_max;
 					img.src = window.URL.createObjectURL(imgfile);
 					img.onload = function () {
-						var _factor = width / img.width;
-						if ( _factor * img.height < height ) { _factor = height / img.height; }
+						var _factor = Math.max( width / img.width, height / img.height );
 						//cut after half a width/height, i.e. overlapping cuts
-						w_max = Math.floor(2*img.width*_factor/width)-1;
+						w_max = Math.floor(2*img.width*_factor / width)-1;
 						h_max = Math.floor(2*img.height*_factor/height)-1;
 						//
-						if (h_max < 0) { h_max = 1; }
-						if (w_max < 0) { w_max = 1; }	
+						if (h_max < 1) { h_max = 1; }
+						if (w_max < 1) { w_max = 1; }	
 						//necessary cuts: w_max*hmax ( = Math.max(w_max,h_max) )
 						callback(n,imgfiles,result,inprogress,style,width,height,w_max*h_max);
 					}
