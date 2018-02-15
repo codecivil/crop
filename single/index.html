@@ -15,12 +15,10 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
-<html lang="de">
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<meta name="robots" content="index,follow"/>
+<html manifest="crop.appcache" lang="de"><head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="robots" content="index,follow">
         <title>crop - by codecivil</title>
         <style>
 
@@ -39,6 +37,17 @@
 				font-family: Lucida Grande, Geneva, Arial, Verdana, Tahoma;
 			   }
 			h1 { text-align: center; }
+			
+			#logo {
+				position: fixed;
+				top: 5px;
+				left: 5px;
+				width: 100px;
+				height: 109px;
+				background-image:url('data:image/png;base64,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');
+				background-size: cover;
+				z-index: 5;
+			}
 			
 			#crop_wrapper { 
 				position: absolute;
@@ -152,7 +161,12 @@
 							try { ctx.drawImage(img,0,0,img.width,img.height,0,0,img.width * _factor,img.height * _factor); } catch(err) { document.getElementById(result).innerHTML += imgfile.name + ": Leider zu groß für den Browser.<br />"; callback(100,inprogress); return;}
 						}
 						//create URL and anchor from canvas
-						var new_img_url = canvas.toDataURL();
+						//choose smaller of jpeg/png
+						var new_img_url_jpeg = canvas.toDataURL('image/jpeg',0.92);
+						var new_img_url_png = canvas.toDataURL('image/png');
+						var new_img_url = new_img_url_jpeg; var _ext = ".jpg";
+						console.log("jpeg:"+new_img_url_jpeg.length+" ; png:"+new_img_url_png.length);
+						if ( new_img_url_jpeg.length > new_img_url_png.length ) { new_img_url = new_img_url_png; _ext = ".png"}
 						var new_img = new Image();
 						new_img.src = new_img_url;
 						new_anchor = document.createElement('a');
@@ -160,9 +174,9 @@
 							//create new file name
 							new_prefix = imgfile.name.substring(0,imgfile.name.indexOf('.'));
 							if ( style == "custom" ) {
-								new_img_name = new_prefix + "_" + style + "_" + width + "x" + height + ".png";
+								new_img_name = new_prefix + "_" + style + "_" + width + "x" + height + _ext;
 							} else {
-								new_img_name = new_prefix + "_" + style + ".png";
+								new_img_name = new_prefix + "_" + style + _ext;
 							} 
 							//
 						new_anchor.download = new_img_name;
@@ -199,7 +213,7 @@
 					img.onload = function () {
 						var _factor = Math.max( width / img.width, height / img.height );
 						//cut after half a width/height, i.e. overlapping cuts
-						w_max = Math.floor(2*img.width*_factor / width)-1;
+						w_max = Math.floor(2*img.width*_factor/width)-1;
 						h_max = Math.floor(2*img.height*_factor/height)-1;
 						//
 						if (h_max < 1) { h_max = 1; }
@@ -269,33 +283,44 @@
 	
 	<body>
 		<h1>crop</h1>
+		<a href="http://codecivil.de/"><div id="logo"></div></a>
 		<div id="impressum_wrapper" onclick="toggleEl('impressum');">
 			<div id="impressum_title">Impressum</div>
-			<div id="impressum">
-				Angaben gemäß § 5 TMG:<br />
-				Dr. Marco Kühnel<br />
-				codecivil Dr. Marco Kühnel ICT Services<br />
-				Vechteweg 4<br />
-				30539 Hannover<br />
-				<br />
-				Kontakt:<br />
-				Telefon: 	+49 (0) 170 7507391<br />
-				E-Mail: 	kuehnel@codecivil.de<br />
-				<br />
-				Umsatzsteuer-ID:<br />
-				Umsatzsteuer-Identifikationsnummer gemäß §27 a Umsatzsteuergesetz:<br />
-				DE 296 659 690<br />
-				Finanzamt Hannover-Mitte<br />
-				<br />
-				Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV:<br />
-				Dr. Marco Kühnel<br />
-				Vechteweg 4<br />
-				30539 Hannover <br />
+			<div id="impressum" style="display: none;">
+				Angaben gemäß § 5 TMG:<br>
+				Dr. Marco Kühnel<br>
+				codecivil Dr. Marco Kühnel ICT Services<br>
+				Vechteweg 4<br>
+				30539 Hannover<br>
+				<br>
+				Kontakt:<br>
+				Telefon: 	+49 (0) 170 7507391<br>
+				E-Mail: 	kuehnel@codecivil.de<br>
+				<br>
+				Umsatzsteuer-ID:<br>
+				Umsatzsteuer-Identifikationsnummer gemäß §27 a Umsatzsteuergesetz:<br>
+				DE 296 659 690<br>
+				Finanzamt Hannover-Mitte<br>
+				<br>
+				Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV:<br>
+				Dr. Marco Kühnel<br>
+				Vechteweg 4<br>
+				30539 Hannover <br>
+				<br>
+				Quellenangaben für die verwendeten Bilder, Grafiken und Schriftarten:<br>
+				<br>
+				Derivat von<br>
+				"Penguin Profile Medalion" aus https://openclipart.org/people/notKlaatu/penguinprofile.svg<br>
+				Autor: notKlaatu, Lizenz: Public Domain<br>
+				<br>
+				Schriftart "Crusoe" aus<br>
+				http://openfontlibrary.org/en/font/crusoe-text<br>
+				Autor: Daniel Pimley, Lizenz: SIL Open Font License<br>
 			</div>
 		</div>
 		<div id="crop_wrapper">
 			<div id="info_wrapper" onclick="toggleEl('info');"><strong>Info</strong>
-				<div id="info">
+				<div id="info" style="display: none;">
 					<p>Mit <strong>crop - by codecivil</strong> können Sie Bilder zum Gebrauch für Homepages, e-Mails oder 
 					andere Webanwendungen zurechtschneiden. Oft werden dabei mehr als 90% Dateigröße eingespart, was
 					nicht nur den einmaligen Datenverkehr beim Versenden der e-Mail oder beim Hochladen auf die Homepage
@@ -306,7 +331,9 @@
 					<p>Die gesamte Software besteht aus diesem einzigen File, das unter der <a href="https://github.com/codecivil/crop/blob/master/LICENSE">GNU Public License</a> lizensiert ist.
 					Die neueste Version ist unter <a href="https://github.com/codecivil/crop">https://github.com/codecivil/crop</a> erhältlich. Diese "Offenheit" von Software stärkt <strong>Transparenz</strong>
 					und <strong>Sicherheit</strong> im digitalen Bereich.</p>  
-					<p>Um die Seite offline zu nutzen, rechtsklicken Sie auf eine freie Stelle der Seite und wählen Sie "Seite speichern unter..." aus. Danach können Sie jederzeit das heruntergeladene
+					<p>Um die Seite offline zu nutzen, rechtsklicken Sie auf eine freie
+ Stelle der Seite und wählen Sie "Seite speichern unter..." aus. Danach 
+können Sie jederzeit das heruntergeladene
 					File index.html mit dem Browser öffnen und alle Funktionen nutzen.</p>
 					
 					Features:
@@ -323,18 +350,18 @@
 				</div>
 			</div>
 			<form id="img_upload" onsubmit="crop('img','style_selection', 'width', 'height', 'inprogress', 'result'); return false">
-			<label for="img">Ich möchte <br /></label><input type="file" id="img" multiple><br />
-			<label for="style_selection">auf<br /></label><select id="style_selection"><br />
-				<option id="news" value="news" selected>"Nachrichten"-Größe</option>
+			<label for="img">Ich möchte <br></label><input id="img" multiple="" type="file"><br>
+			<label for="style_selection">auf<br></label><select id="style_selection">
+				<option id="news" value="news" selected="selected">"Nachrichten"-Größe</option>
 				<option id="medium" value="medium">halbe Seitenbreite</option>
 				<option id="large" value="large">ganze Seitenbreite</option>
 				<option id="custom" value="custom">individuelle Größe...</option>
-			</select><br />
-			<div id="custom_form">
-				<label for="width">Breite</label><input type="number" id="width">
-				<label for="height">Höhe</label><input type="number" id="height" title="Falls leer, wird das Seitenverhältnis beibehalten.">
-			</div><br />
-			<input type="submit" value="zuschneiden">
+			</select><br>
+			<div id="custom_form" style="display: none;">
+				<label for="width">Breite</label><input id="width" type="number">
+				<label for="height">Höhe</label><input id="height" title="Falls leer, wird das Seitenverhältnis beibehalten." type="number">
+			</div><br>
+			<input value="zuschneiden" type="submit">
 			</form>
 			<div id="inprogress">Bilder werden vorbereitet...</div>
 			<div id="result" title="Zum Speichern bitte anklicken"></div>
@@ -359,4 +386,5 @@
 				} 
 			}
 		</script>
-	</body>
+	
+</body></html>
